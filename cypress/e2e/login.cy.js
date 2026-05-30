@@ -15,9 +15,8 @@ describe ('Login Sauce Demo', ()=>{
     })
 
     it('Login con contrasenia incorrecta',()=>{
-        // cy.log('test 2')
         cy.get('[data-test="username"]').type('standard_user')
-        cy.get('[data-test="password"]').type('secret_sauceaassd')
+        cy.get('[data-test="password"]').type('12345')
         cy.get('[data-test="login-button"]').click()
 
         cy.get('[data-test="error"]')
@@ -26,12 +25,29 @@ describe ('Login Sauce Demo', ()=>{
     })
 
     it('Login con campos vacíos',()=>{
-        // cy.log('test 2')
+        cy.get('[data-test="login-button"]').click()
+        cy.get('[data-test="error"]').should('be.visible').and('contain','Epic sadface: Username is required')
+    })
+
+    it('Login con usuario bloqueado (locked_out_user)', () => {
+        cy.get('[data-test="username"]').type('locked_out_user')
+        cy.get('[data-test="password"]').type('secret_sauce')
         cy.get('[data-test="login-button"]').click()
 
-        cy.get('[data-test="error"]').should('be.visible').and('contain','Epic sadface: Username is required')
+        cy.get('[data-test="error"]')
+        .should('be.visible')
+        .and('contain','Epic sadface: Sorry, this user has been locked out.')
+    })
 
-        
+    it('Logout desde el menú hamburguesa', () => {
+        cy.get('[data-test="username"]').type('standard_user')
+        cy.get('[data-test="password"]').type('secret_sauce')
+        cy.get('[data-test="login-button"]').click()
+
+        cy.get('#react-burger-menu-btn').click()
+        cy.get('#logout_sidebar_link').click()
+
+        cy.url().should('eq', 'https://www.saucedemo.com/')
     })
 
 })
